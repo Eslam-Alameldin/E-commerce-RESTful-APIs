@@ -4,7 +4,7 @@ const ApiError = require("../utils/apiError");
 const Category = require("../models/categoryModel");
 
 exports.createCategory = asyncHandler(async (req, res) => {
-  const name = req.body.name;
+  const { name } = req.body;
   const category = await Category.create({
     name: name,
     slug: slugify(name),
