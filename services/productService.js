@@ -1,59 +1,26 @@
-const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/apiError");
+const factory = require("./handlersFactory");
 const Product = require("../models/productModel");
 
-exports.createProduct = asyncHandler(async (req, res) => {
-  console.log(req.body);
-  const product = await Product.create(req.body);
+// @desc    Get list of products
+// @route   GET /api/v1/products
+// @access  Public
+exports.getProducts = factory.getAll(Product, "Products");
 
-  res.status(201).json({
-    data: product,
-  });
-});
+// @desc    Get specific product by id
+// @route   GET /api/v1/products/:id
+// @access  Public
+exports.getProduct = factory.getOne(Product);
 
-exports.getProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+// @desc    Create product
+// @route   POST  /api/v1/products
+// @access  Private
+exports.createProduct = factory.createOne(Product);
+// @desc    Update specific product
+// @route   PUT /api/v1/products/:id
+// @access  Private
+exports.updateProduct = factory.updateOne(Product);
 
-  const product = await Product.findById(id);
-
-  if (!product) {
-    return new ApiError(`No product with id: ${id} is found`, 404);
-  }
-
-  res.status(200).json({
-    data: product,
-  });
-});
-
-exports.getProducts = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 10;
-  const skip = (page - 1) * limit;
-
-  const products = await Product.find({}).limit(limit).skip(skip);
-
-  res.status(200).json({ results: products.length, page, data: products });
-});
-
-exports.updateProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  const product = await Product.findOneAndUpdate({ _id: id }, req.body, {
-    new: true,
-  });
-
-  if (!product) {
-    return next(new ApiError(`No product for this id: ${id}`, 404));
-  }
-  res.status(200).json({ data: product });
-});
-
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-  const product = await Product.findByIdAndDelete(id);
-
-  if (!product) {
-    return next(new ApiError(`No product for this id: ${id}`, 404));
-  }
-  res.status(204).send();
-});
+// @desc    Delete specific product
+// @route   DELETE /api/v1/products/:id
+// @access  Private
+exports.deleteProduct = factory.deleteOne(Product);
