@@ -1,5 +1,54 @@
+const sharp = require("sharp");
+const { v4: uuidv4 } = require("uuid");
+const asyncHandler = require("express-async-handler");
+
 const factory = require("./handlersFactory");
 const Product = require("../models/productModel");
+const { uploadMixOfImages } = require("../middlewares/uploadImageMiddleware");
+
+exports.uploadProductImages = uploadMixOfImages([
+  { name: "imageCover", maxCount: 1 },
+  { name: "images", maxCount: 5 },
+]);
+
+// Image processing
+exports.resizeProductsImages = asyncHandler(async (req, res, next) => {
+  // 1) Cover image
+  if (req.files.imageCover) {
+    const filename = `product-${uuidv4()}-${Date.now()}-cover.jpeg`;
+
+    await sharp(req.files.imageCover[0].buffer)
+      .resize(2000, 1333)
+      .toFormat("jpeg")
+      .jpeg({ quality: 95 })
+      .toFile(`uploads/products/${filename}`);
+
+    // Save image into our db
+    req.body.imageCover = filename;
+  }
+
+  // 2) Images
+  if (req.files.images) {
+    req.body.images = [];
+
+    await Promise.all(
+      req.files.images.map(async (file, index) => {
+        const filename = `product-${uuidv4()}-${Date.now()}-${index + 1}.jpeg`;
+
+        await sharp(file.buffer)
+          .resize(2000, 1333)
+          .toFormat("jpeg")
+          .jpeg({ quality: 95 })
+          .toFile(`uploads/products/${filename}`);
+
+        // Save image into our db
+        req.body.images.push(filename);
+      })
+    );
+  }
+
+  next();
+});
 
 // @desc    Get list of products
 // @route   GET /api/v1/products
