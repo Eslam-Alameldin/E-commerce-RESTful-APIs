@@ -1,12 +1,12 @@
-const sharp = require("sharp");
-const { v4: uuidv4 } = require("uuid");
 const asyncHandler = require("express-async-handler");
+const { v4: uuidv4 } = require("uuid");
+const sharp = require("sharp");
 
 const factory = require("./handlersFactory");
-const Brand = require("../models/brandModel");
 const { uploadSingleImage } = require("../middlewares/uploadImageMiddleware");
+const Brand = require("../models/brandModel");
 
-// Upload image
+// Upload single image
 exports.uploadBrandImage = uploadSingleImage("image");
 
 // Image processing
