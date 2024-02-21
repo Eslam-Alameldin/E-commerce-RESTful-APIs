@@ -69,8 +69,7 @@ exports.updateUserValidator = [
       return true;
     }),
   check("email")
-    .notEmpty()
-    .withMessage("Email required")
+    .optional()
     .isEmail()
     .withMessage("Invalid email address")
     .custom((val) =>
@@ -130,15 +129,14 @@ exports.deleteUserValidator = [
 ];
 
 exports.updateLoggedUserValidator = [
-  body("name")
+  check("name")
     .optional()
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
     }),
   check("email")
-    .notEmpty()
-    .withMessage("Email required")
+    .optional()
     .isEmail()
     .withMessage("Invalid email address")
     .custom((val) =>

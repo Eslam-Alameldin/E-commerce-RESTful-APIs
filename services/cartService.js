@@ -22,6 +22,10 @@ exports.addProductToCart = asyncHandler(async (req, res, next) => {
   const { productId, color } = req.body;
   const product = await Product.findById(productId);
 
+  if (!product) {
+    return next(new ApiError(`Product not found with id : ${productId}`, 404));
+  }
+
   // 1) Get Cart for logged user
   let cart = await Cart.findOne({ user: req.user._id });
 
@@ -155,7 +159,7 @@ exports.applyCoupon = asyncHandler(async (req, res, next) => {
   });
 
   if (!coupon) {
-    return next(new ApiError(`Coupon is invalid or expired`));
+    return next(new ApiError(`Coupon is invalid or expired`, 400));
   }
 
   // 2) Get logged user cart to get total cart price

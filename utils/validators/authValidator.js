@@ -30,6 +30,8 @@ exports.signupValidator = [
   check("password")
     .notEmpty()
     .withMessage("Password required")
+    .isString()
+    .withMessage("Invalid password, must be a string")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters")
     .custom((password, { req }) => {
@@ -41,7 +43,9 @@ exports.signupValidator = [
 
   check("passwordConfirm")
     .notEmpty()
-    .withMessage("Password confirmation required"),
+    .withMessage("Password confirmation required")
+    .isString()
+    .withMessage("Invalid password confirmation, must be a string"),
 
   validatorMiddleware,
 ];
@@ -53,9 +57,43 @@ exports.loginValidator = [
     .isEmail()
     .withMessage("Invalid email address"),
 
-  check("password")
+  check("password").notEmpty().withMessage("Password required"),
+
+  validatorMiddleware,
+];
+
+exports.forgotPasswordValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email required")
+    .isEmail()
+    .withMessage("Invalid email address"),
+
+  validatorMiddleware,
+];
+
+exports.verifyPassResetCodeValidator = [
+  check("resetCode")
+    .notEmpty()
+    .withMessage("Reset code required")
+    .isString()
+    .withMessage("Invalid reset code, must be a string"),
+
+  validatorMiddleware,
+];
+
+exports.resetPasswordValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email required")
+    .isEmail()
+    .withMessage("Invalid email address"),
+
+  check("newPassword")
     .notEmpty()
     .withMessage("Password required")
+    .isString()
+    .withMessage("Invalid password, must be a string")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters"),
 

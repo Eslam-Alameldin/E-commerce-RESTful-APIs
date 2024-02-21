@@ -97,6 +97,16 @@ exports.protect = asyncHandler(async (req, res, next) => {
     }
   }
 
+  // 5) Check if user is active
+  if (!currentUser.active) {
+    return next(
+      new ApiError(
+        "User is not active, please reactivate the account and login agian!",
+        401
+      )
+    );
+  }
+
   req.user = currentUser;
   next();
 });
@@ -178,7 +188,7 @@ exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
     passwordResetExpires: { $gt: Date.now() },
   });
   if (!user) {
-    return next(new ApiError("Reset code invalid or expired"));
+    return next(new ApiError("Reset code invalid or expired", 400));
   }
 
   // 2) Reset code valid

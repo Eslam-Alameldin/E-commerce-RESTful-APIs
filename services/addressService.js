@@ -35,7 +35,7 @@ exports.removeAddress = asyncHandler(async (req, res, next) => {
     { new: true }
   );
 
-  res.status(200).json({
+  res.status(204).json({
     status: "success",
     message: "Address removed successfully.",
     data: user.addresses,

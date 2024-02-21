@@ -8,12 +8,24 @@ const {
   getLoggedUserWishlist,
 } = require("../services/wishlistService");
 
+const {
+  addProductToWishlistValidator,
+  removeProductFromWishlistValidator,
+} = require("../utils/validators/wishlistValidator");
+
 const router = express.Router();
 
 router.use(authService.protect, authService.allowedTo("user"));
 
-router.route("/").post(addProductToWishlist).get(getLoggedUserWishlist);
+router
+  .route("/")
+  .post(addProductToWishlistValidator, addProductToWishlist)
+  .get(getLoggedUserWishlist);
 
-router.delete("/:productId", removeProductFromWishlist);
+router.delete(
+  "/:productId",
+  removeProductFromWishlistValidator,
+  removeProductFromWishlist
+);
 
 module.exports = router;

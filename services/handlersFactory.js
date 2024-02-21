@@ -11,8 +11,8 @@ exports.deleteOne = (Model) =>
       return next(new ApiError(`No document for this id ${id}`, 404));
     }
 
-    // Trigger "remove" event when delete document
-    document.remove();
+    // Trigger "deleteOne" event when delete document
+    document.deleteOne();
     res.status(204).send();
   });
 
